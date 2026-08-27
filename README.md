@@ -1,4 +1,4 @@
-AOX Trade case study
+# AOX Trade case study
 
 ## Q0. Explain the three stages in your own words
 
