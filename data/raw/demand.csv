@@ -1,4 +1,4 @@
-time_utc,day_ahead_forecast,actual
+time_utc,demand_da_mw,demand_actual_mw
 00:00:00,13234,13131
 00:15:00,13082,13084
 00:30:00,12919,12982

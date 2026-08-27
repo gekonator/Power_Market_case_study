@@ -1,4 +1,4 @@
-time_utc,day_ahead_forecast,actual_total,actual_onshore,actual_offshore,installed_capacity
+time_utc,wind_da_mw,wind_actual_total_mw,wind_actual_onshore_mw,wind_actual_offshore_mw,wind_capacity_mw
 00:00:00,3751,4321,1886,2435,8858
 00:15:00,3678,4278,1757,2521,8858
 00:30:00,3642,4114,1688,2426,8858

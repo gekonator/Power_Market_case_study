@@ -1,4 +1,4 @@
-time_utc,day_ahead_forecast,actual,installed_capacity
+time_utc,solar_da_mw,solar_actual_mw,solar_capacity_mw
 00:00:00,0,0,18830
 00:15:00,0,0,18830
 00:30:00,0,0,18830

@@ -1,4 +1,4 @@
-time_utc,long_price_eur_mwh,short_price_eur_mwh
+time_utc,price_imbalance_long_eur_mwh,price_imbalance_short_eur_mwh
 00:00:00,150.0,150.0
 00:15:00,140.9,140.9
 00:30:00,150.0,150.0
