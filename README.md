@@ -94,3 +94,10 @@ Cross-border schedules were adjusted before the realised residual-load error app
 ![Residual error, imbalance prices and import capacity](outputs/figures/residual_prices_and_import_capacity.png)
 
 During the period of the largest positive residual-load error, no additional import capacity was available across the reported borders. This limited the Netherlands’ ability to relieve the system through further cross-border imports.
+
+
+### Residual error, impalance prices and total balancing
+
+![Residual error, impalance prices and total balancing](outputs/figures/residual_prices_and_balancing.png)
+
+Imbalance prices tracked the actual balancing requirement more closely than residual-load error. Residual load remained elevated after the price spike, but the balancing requirement fell, suggesting that other generation, flows or market responses had begun to offset the pressure.
