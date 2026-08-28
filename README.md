@@ -75,6 +75,6 @@ Residual load does not by itself prove that the Dutch system was short. The next
 
 ### Imbalance prices with residual load error
 
-![Imbalance prices with residual load error](outputs/figures/renewable_forecast_errors.png)
+![Imbalance prices with residual load error](outputs/figures/prices_and_residual_load_error.png)
 
 Large positive residual-load errors coincided with sharply higher imbalance prices, suggesting that the additional short pressure was compensated through expensive balancing actions.
