@@ -20,6 +20,8 @@ The workbook does not explicitly state the unit for the renewable forecast and o
 
 The workbook states that "UTC is one hour ahead of CET." This appears to be reversed: CET is normally one hour ahead of UTC. I therefore treat the time conversion as a data-quality issue rather than silently applying the workbook statement.
 
+ISP number within the settlement period???
+
 ### Processed 15-minute dataset
 
 I merged the solar, wind, demand, day-ahead price and imbalance price sheets into `data/processed/nl_market_15m.csv`. Each row represents one 15-minute delivery interval.
@@ -78,3 +80,17 @@ Residual load does not by itself prove that the Dutch system was short. The next
 ![Imbalance prices with residual load error](outputs/figures/prices_and_residual_load_error.png)
 
 Large positive residual-load errors coincided with sharply higher imbalance prices, suggesting that the additional short pressure was compensated through expensive balancing actions.
+
+
+### Residual load error with export
+
+![Residual load error with export](outputs/figures/residual_load_error_and_nl_exports.png)
+
+Cross-border schedules were adjusted before the realised residual-load error appeared, theoretically as updated forecasts became available. The largest export reductions then coincided with the strongest positive residual-load errors, but the relationship was not exact.
+
+
+### Residual error, imbalance prices and import capacity
+
+![Residual error, imbalance prices and import capacity](outputs/figures/residual_prices_and_import_capacity.png)
+
+During the period of the largest positive residual-load error, no additional import capacity was available across the reported borders. This limited the Netherlands’ ability to relieve the system through further cross-border imports.
