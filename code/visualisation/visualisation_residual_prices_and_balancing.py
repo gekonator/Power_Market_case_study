@@ -18,10 +18,11 @@ market["residual_load_error_mw"] = (
     market["residual_load_actual_mw"] - market["residual_load_da_mw"]
 )
 
-# The source labels balance time as CET. Assume CET = UTC + 1 hour.
-balance["time"] = (
-    pd.to_datetime(balance["time_cet"], format="%H:%M:%S")
-    - pd.Timedelta(hours=1)
+# The CET-to-UTC conversion is already applied when creating
+# balance_delta_total.csv.
+balance["time"] = pd.to_datetime(
+    balance["time_utc"],
+    format="%H:%M:%S",
 )
 balance_15m = (
     balance.set_index("time")["power_net_total_mw"]
