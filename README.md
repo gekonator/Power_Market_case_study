@@ -93,30 +93,6 @@ Imbalance prices tracked the indicative net balancing contribution shown in the 
 
 The NESO auction data explains much of the change in the BritNed schedule. During the main period of Dutch system stress, finalised imports from Great Britain were substantially lower than planned in the day-ahead schedule and sometimes reversed into exports from the Netherlands. NESO had procured energy for the British system through its interconnector auctions, which changed the scheduled BritNed flow. At 12:00, the schedule changed from a 687 MW import into the Netherlands to a 10 MW export, a 697 MW swing towards Great Britain. This closely matches the 691 MW NESO Buy volume accepted on BritNed.
 
-### Intraday prices during the stress periods
-
-![Intraday prices first stress hours](outputs/figures/intraday_prices_stress_hours.png)
-
-The trade tape shows how intraday prices changed for the selected delivery periods.
-
-The 12:00–13:00 UTC hourly product began to reprice after the NESO auction publication, which is consistent with the market reacting to the loss of expected BritNed supply. The intraday price then followed a sustained upward trend. However, it still underestimated the realised imbalance prices for the delivery hour. There may have been a long opportunity during this repricing.
-
-The 13:00–14:00 UTC hourly product also repriced after the NESO auction publication. During the 12:00–13:00 delivery hour, its intraday price rose above the imbalance price that was subsequently realised during 13:00–14:00. There may have been a short opportunity once the market began to overestimate how long the system stress would continue.
-
-The 14:00–15:00 UTC hourly product also repriced upwards. As the observed balancing pressure and imbalance prices eased, its intraday price fell back towards its earlier level.
-
-Intraday prices began to fall after approximately 12:30 as the observed balancing pressure eased. The available data explains part of this move, although it does not identify every source of the system response.
-
-![Intraday prices second stress hours](outputs/figures/intraday_prices_late_stress_hours.png)
-
-The second figure covers a later period of system stress. It was less extreme than the first, but it is still worth investigating.
-
-The NESO auction published around 10:00 contained only a 10 MW BritNed Buy volume for the 15:00–16:00 UTC product, so the auction does not explain its price movement. The intraday price fell as the earlier stress eased, but later underestimated the imbalance prices realised during this delivery hour.
-
-The 16:00–17:00 UTC hourly product was affected by the next NESO auction disclosure at 12:04. Its price rose after the publication and incorporated information from the earlier stress period, but the realised imbalance prices for this delivery hour were still higher.
-
-The 17:00–18:00 UTC hourly product also reflected the earlier information and traded at levels influenced by the preceding imbalance prices. In this case, it overestimated the imbalance prices subsequently realised during its own delivery hour.
-
 ### Summary
 
 The following figure summarises the relationship between day-ahead, intraday and imbalance prices over the delivery day. The intraday series uses the final five-minute median price for each continuous quarter-hour product.
@@ -139,7 +115,82 @@ The extreme imbalance prices therefore appear to have resulted from several fact
 
 The fall in imbalance prices after the 12:15 peak can be partly explained by the available data. Residual-load error declined from 2,526 MW at 12:30 to 2,241 MW at 12:45 and 1,539 MW by 13:15 as solar generation began to recover and the positive wind error increased. Finalised net exports also fell from 2,576 MW at 12:00 to 1,950 MW at 13:00, leaving more energy in the Netherlands. At the same time, the indicative net Balance Delta contribution dropped from approximately 765 MW at 12:30 to 403 MW at 12:45 and 163 MW at 13:00. TenneT required less upward balancing energy, allowing the system to move towards cheaper balancing bids. However, residual-load error remained high, and the dataset does not show conventional generation or storage dispatch. I can explain why balancing pressure eased, but not identify every source that replaced the missing energy.
 
-When identifying trading opportunities, I need to be careful about look-ahead bias. In this analysis I know the final fundamentals and imbalance prices, while a trader acting before delivery would only have the information available at that time. I therefore need to separate observable signals from realised outcomes and focus on opportunities that could have been recognised live.
+## Q2. The biggest opportunities
+
+I use realised volatility to screen the day, but I reset the information clock before reconstructing each trade. Entry, stop and take-profit must use only information available at the decision time. Both entry and exit are intraday trades before delivery. I use imbalance prices only to assess what happened later.
+
+The trade file contains 73,343 unique continuous hourly trades, 100,098 quarter-hour trades and only 262 half-hour trades. I focus first on hourly products because they match the hourly BritNed schedules and NESO auction periods directly. Half-hour products are too thin for the main analysis.
+
+The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at 10:30 UTC, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I also assume that transfer capacity for the future delivery hours had been published by then. I do not use future actuals, future balancing activations, future imbalance prices or finalised post-intraday schedules to justify the entry.
+
+I screened all four NESO disclosures. The first disclosure at 03:18 caused little immediate repricing, while the large move in the 09:00–12:00 products started several hours later without another identifiable signal in the data. I did not treat it as a defensible event-driven trade.
+
+### Opportunity 1: long 13:00–14:00 after the 09:46 NESO disclosure
+
+The 09:46 disclosure affected the 12:00–16:00 delivery curve. I concentrate on 12:00–13:00, 13:00–14:00 and 14:00–15:00. The auction volume for 15:00–16:00 was only 10 MW, so NESO was not a convincing explanation for that product.
+
+![Neso buy vs expected import at 10:30](outputs/figures/neso_vs_da_britned_import_0946_12_15.png)
+
+The clearest direct shock was in 12:00–13:00. The Netherlands had scheduled a 687 MW day-ahead BritNed import, while NESO published a 691 MW BritNed Buy for Great Britain. For 13:00–14:00, the NESO Buy was 389 MW against a 931 MW scheduled import. My trade is therefore not based on 13:00–14:00 having the largest direct shock. It is a curve-spillover idea: if the loss of BritNed supply contributed to stress in 12:00–13:00, the next hourly product could reprice while it was still open for intraday trading.
+
+#### When it became identifiable
+
+At 09:46 the auction disclosed the risk, but the current system data did not yet confirm short pressure. Residual-load error was negative and the indicative Balance Delta contribution was below zero. An immediate long would only make sense for a trader who could process the disclosure faster than the rest of the market.
+
+At 10:15 residual-load error became positive, but Balance Delta was still slightly negative. This was an early warning rather than enough confirmation for my trade.
+
+I consider the opportunity identifiable at 10:30. By then the latest completed residual-load error had increased to +798 MW, and the indicative net Balance Delta contribution had turned positive at approximately +217 MW. Under my forward-capacity assumption, reported inbound ATC for 12:00–14:00 was zero. These indicators do not prove that the future system would be short, but together with the intraday price and volume move they gave broader confirmation than the auction disclosure alone.
+
+![Factors at 10:30](outputs/figures/long_confirmation_at_1030.png)
+
+![Trades at 10:30](outputs/figures/intraday_decision_snapshot_1030_12_15.png)
+
+#### Entry and stop
+
+The known price at the decision time is not automatically an executable entry. The 10:25–10:30 median was €251.70/MWh, but the first five-minute window after the decision traded between €257.60 and €299.00/MWh. Its median was €277.90/MWh, based on 47 unique trades and 107.9 MWh of recorded volume. I use €277.90/MWh as the representative entry.
+
+I set the stop at €230/MWh, below the last pre-entry breakout area. A return below this level would invalidate the price confirmation. I would also close the position if residual-load error and the indicative Balance Delta reversed, or if substantial inbound capacity became available.
+
+#### Rough sizing
+
+The case does not specify trading capital or portfolio limits, so position size requires an explicit assumption. I use hypothetical trading capital of €100,000 and risk 1% (€1,000) on the trade:
+
+```text
+risk per MWh = €277.90 − €230.00 = €47.90/MWh
+position MWh = €1,000 / €47.90 = 20.88 MWh
+```
+
+For a one-hour product, this is a 20.88 MW position. It represents approximately 19% of the volume recorded in the first five-minute entry window, so it is not obviously inconsistent with the tape. However, the data do not contain the order book, so I cannot prove that the full position would execute at the median without market impact or slippage.
+
+#### Take-profit and time exit
+
+I use three exit rules and close the position when the first one is triggered:
+
+1. a 5R price target;
+2. the first upward mFRR direct activation;
+3. a time exit at 12:50 UTC, ten minutes before delivery.
+
+The price target is set before looking at the subsequent price path:
+
+```text
+take-profit = €277.90 + 5 × €47.90 = €517.40/MWh
+```
+
+If the price target is not reached first, an upward mFRR direct activation is an event-based reason to close because the expected stress has entered the realised balancing stage. If neither condition occurs, I close at 12:50 and do not carry the position into the 13:00 delivery period.
+
+#### Simulated outcome
+
+![Simulated long 13:00–14:00](outputs/figures/trade_simulation_13_14.png)
+
+The stop was not touched after entry. The 5R target was the first exit rule to trigger. The first recorded trade above €517.40/MWh occurred at 11:29:50 UTC at €530.16/MWh. That print was only 1 MWh, so I do not assume that the whole position filled immediately. Cumulative recorded volume at or above the target reached 20.9 MWh at 11:31:22. I use that as the assumed full-fill time for a resting limit sell at €517.40/MWh. The tape still does not show queue position, so actual execution and slippage cannot be proven.
+
+For the hypothetical 20.88 MWh position:
+
+```text
+P&L = (€517.40 − €277.90) × 20.88 MWh = approximately €5,000
+```
+
+This is a 5R gain, or 5% of the hypothetical €100,000 capital before fees. TenneT's 199 MW upward mFRR direct activation began later, at approximately 12:22 UTC under my timezone assumption, and the time exit was set for 12:50. Neither fallback rule was used because the 5R target had already closed the position. The higher prices later in the day are shown only as ex-post context and are not included in the P&L.
 
 ## Data and methodology
 
