@@ -22,7 +22,7 @@ The second thing that surprised me was that the day-ahead market is a call marke
 
 ## Q1. Tell us the story of the day
 
-The main event of the day was a severe midday system stress that the day-ahead market had not anticipated. A large solar forecast error, slightly higher demand, limited ability to increase imports and the loss of expected BritNed supply combined to push balancing and imbalance prices to extreme levels.
+The main event of the day was a severe midday system stress that the day-ahead market had not anticipated. A large solar forecast error, slightly higher demand, limited ability to increase imports across the reported borders and the loss of expected BritNed supply combined to push balancing and imbalance prices to extreme levels.
 
 ```text
 07:00   export schedules begin to fall below DA
@@ -117,19 +117,23 @@ The fall in imbalance prices after the 12:15 peak can be partly explained by the
 
 ## Q2. The biggest opportunities
 
-I use realised volatility to screen the day, but I reset the information clock before reconstructing each trade. Entry, stop and take-profit must use only information available at the decision time. Both entry and exit are intraday trades before delivery. I use imbalance prices only to assess what happened later.
+### Limitations and assumptions
 
-The trade file contains 73,343 unique continuous hourly trades, 100,098 quarter-hour trades and only 262 half-hour trades. I focus first on hourly products because they match the hourly BritNed schedules and NESO auction periods directly. Half-hour products are too thin for the main analysis.
+The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at each decision time, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I do not use observations from intervals that had not yet finished. I also assume that transfer capacity for future delivery hours had been published by then. Future actuals, future balancing activations, future imbalance prices and finalised post-intraday schedules do not justify an entry. Entry, stop and take-profit use only information available at the decision time. Both entry and exit are intraday trades before delivery.
 
-The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at 10:30 UTC, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I also assume that transfer capacity for the future delivery hours had been published by then. I do not use future actuals, future balancing activations, future imbalance prices or finalised post-intraday schedules to justify the entry.
+The task does not specify trading capital, so I assume capital of €10,000 and risk 1% of equity on each opportunity. The data cover only one day, which is not enough to estimate an optimal risk percentage or take-profit method statistically. I place each stop where the trade idea would be invalidated and set the take-profit before simulating the later price path. The take-profit method can differ between ideas, but I do not select a target from the known ex-post maximum.
 
-I screened all four NESO disclosures. The first disclosure at 03:18 caused little immediate repricing, while the large move in the 09:00–12:00 products started several hours later without another identifiable signal in the data. I did not treat it as a defensible event-driven trade.
+The trades file contains 73,343 unique continuous hourly trades, 100,098 quarter-hour trades and only 262 half-hour trades. I focus first on hourly products because they match the hourly BritNed schedules and NESO auction periods directly. Half-hour products are too thin for the main analysis.
+
+I screened all four NESO disclosures. The first disclosure at 03:18 caused little immediate repricing, while the large move in the 09:00–12:00 products started several hours later without another identifiable signal in the data. I did not treat it as a defensible event-driven trade. I also investigated the 12:04 disclosure, but by the time its reaction could be confirmed, the affected products were already expensive, reported inbound ATC was positive and the current stress indicators were beginning to ease. A normal stop would have been hit before the later recovery, so I excluded that setup rather than forcing a third opportunity.
 
 ### Opportunity 1: long 13:00–14:00 after the 09:46 NESO disclosure
 
 The 09:46 disclosure affected the 12:00–16:00 delivery curve. I concentrate on 12:00–13:00, 13:00–14:00 and 14:00–15:00. The auction volume for 15:00–16:00 was only 10 MW, so NESO was not a convincing explanation for that product.
 
-![Neso buy vs expected import at 10:30](outputs/figures/neso_vs_da_britned_import_0946_12_15.png)
+![Disclosure 9:46](outputs/figures/britned_disclosure_094642.png)
+
+![NESO Buy versus expected import at 10:30](outputs/figures/neso_vs_da_britned_import_0946_12_15.png)
 
 The clearest direct shock was in 12:00–13:00. The Netherlands had scheduled a 687 MW day-ahead BritNed import, while NESO published a 691 MW BritNed Buy for Great Britain. For 13:00–14:00, the NESO Buy was 389 MW against a 931 MW scheduled import. My trade is therefore not based on 13:00–14:00 having the largest direct shock. It is a curve-spillover idea: if the loss of BritNed supply contributed to stress in 12:00–13:00, the next hourly product could reprice while it was still open for intraday trading.
 
@@ -143,24 +147,22 @@ I consider the opportunity identifiable at 10:30. By then the latest completed r
 
 ![Factors at 10:30](outputs/figures/long_confirmation_at_1030.png)
 
-![Trades at 10:30](outputs/figures/intraday_decision_snapshot_1030_12_15.png)
+#### Entry and stop, sizing
 
-#### Entry and stop
-
-The known price at the decision time is not automatically an executable entry. The 10:25–10:30 median was €251.70/MWh, but the first five-minute window after the decision traded between €257.60 and €299.00/MWh. Its median was €277.90/MWh, based on 47 unique trades and 107.9 MWh of recorded volume. I use €277.90/MWh as the representative entry.
+The first five-minute window after the decision traded between €257.60 and €299.00/MWh. Its median was €277.90/MWh, based on 47 unique trades and 107.9 MWh of recorded volume. I use €277.90/MWh as the representative entry.
 
 I set the stop at €230/MWh, below the last pre-entry breakout area. A return below this level would invalidate the price confirmation. I would also close the position if residual-load error and the indicative Balance Delta reversed, or if substantial inbound capacity became available.
 
-#### Rough sizing
-
-The case does not specify trading capital or portfolio limits, so position size requires an explicit assumption. I use hypothetical trading capital of €100,000 and risk 1% (€1,000) on the trade:
+The case does not specify trading capital or portfolio limits, so position size requires an explicit assumption. I use hypothetical trading capital of €10,000 and risk 1% (€100) on the trade:
 
 ```text
 risk per MWh = €277.90 − €230.00 = €47.90/MWh
-position MWh = €1,000 / €47.90 = 20.88 MWh
+position MWh = €100 / €47.90 = 2.088 MWh
 ```
 
-For a one-hour product, this is a 20.88 MW position. It represents approximately 19% of the volume recorded in the first five-minute entry window, so it is not obviously inconsistent with the tape. However, the data do not contain the order book, so I cannot prove that the full position would execute at the median without market impact or slippage.
+The position is rounded to 2.088 MWh. Using that rounded size, a €100 risk budget corresponds to approximately €47.89/MWh of price risk and implies a stop of approximately €230.01/MWh, which is effectively the €230/MWh stop used above.
+
+![Trades at 10:30](outputs/figures/intraday_decision_snapshot_1030_12_15.png)
 
 #### Take-profit and time exit
 
@@ -173,7 +175,9 @@ I use three exit rules and close the position when the first one is triggered:
 The price target is set before looking at the subsequent price path:
 
 ```text
-take-profit = €277.90 + 5 × €47.90 = €517.40/MWh
+5R target profit = 5 × €100 = €500
+required price increase = €500 / 2.088 MWh = €239.46/MWh
+take-profit = €277.90 + €239.46 = €517.36/MWh
 ```
 
 If the price target is not reached first, an upward mFRR direct activation is an event-based reason to close because the expected stress has entered the realised balancing stage. If neither condition occurs, I close at 12:50 and do not carry the position into the 13:00 delivery period.
@@ -182,15 +186,81 @@ If the price target is not reached first, an upward mFRR direct activation is an
 
 ![Simulated long 13:00–14:00](outputs/figures/trade_simulation_13_14.png)
 
-The stop was not touched after entry. The 5R target was the first exit rule to trigger. The first recorded trade above €517.40/MWh occurred at 11:29:50 UTC at €530.16/MWh. That print was only 1 MWh, so I do not assume that the whole position filled immediately. Cumulative recorded volume at or above the target reached 20.9 MWh at 11:31:22. I use that as the assumed full-fill time for a resting limit sell at €517.40/MWh. The tape still does not show queue position, so actual execution and slippage cannot be proven.
+The stop was not touched after entry. The 5R target was the first exit rule to trigger. The first recorded trade above €517.36/MWh occurred at 11:29:50 UTC at €530.16/MWh. That print was only 1 MWh, so I do not assume that the whole position filled immediately. Cumulative recorded volume at or above the target exceeded the 2.088 MWh position at 11:30:28. I use that as the assumed full-fill time for a resting limit sell at €517.36/MWh. The tape still does not show queue position, so actual execution and slippage cannot be proven.
 
-For the hypothetical 20.88 MWh position:
+For the hypothetical 2.088 MWh position:
 
 ```text
-P&L = (€517.40 − €277.90) × 20.88 MWh = approximately €5,000
+P&L = (€517.36 − €277.90) × 2.088 MWh = approximately €500
 ```
 
-This is a 5R gain, or 5% of the hypothetical €100,000 capital before fees. TenneT's 199 MW upward mFRR direct activation began later, at approximately 12:22 UTC under my timezone assumption, and the time exit was set for 12:50. Neither fallback rule was used because the 5R target had already closed the position. The higher prices later in the day are shown only as ex-post context and are not included in the P&L.
+This is a 5R gain, or 5% of the hypothetical €10,000 capital before fees. TenneT's 199 MW upward mFRR direct activation began later, at approximately 12:22 UTC under my timezone assumption, and the time exit was set for 12:50. Neither fallback rule was used because the 5R target had already closed the position. The higher prices later in the day are shown only as ex-post context and are not included in the P&L.
+
+### Opportunity 2: short after the failed reaction to the 17:28 NESO disclosure
+
+The 17:28 disclosure affected the 20:00–22:00 delivery curve.
+
+![](outputs/figures/britned_disclosure_172808.png)
+
+![NESO Buy versus DA BritNed import at 17:28](outputs/figures/neso_vs_da_britned_import_1728_20_22.png)
+
+NESO published a 172 MW BritNed Buy for 20:00–21:00 and 431 MW for 21:00–22:00. These volumes were respectively 202% and 169% of the Netherlands' scheduled DA BritNed imports. This was bullish information for NL, but it arrived after the intraday market had already repriced the earlier system stress. I therefore looked at whether the new information could extend the scarcity premium or whether the market had already overestimated the duration of the stress.
+
+#### When it became identifiable
+
+I would not short immediately at 17:28 because the lost BritNed supply was a real bullish risk. Both products initially increased after the disclosure. The 20:00–21:00 median rose from €182.56/MWh during 17:25–17:28 to €192.66/MWh during 17:30–17:35. The 21:00–22:00 median rose from €165.06/MWh to €170.25/MWh.
+
+The reaction then failed. During 17:35–17:40, the medians fell to €188.80/MWh and €167.69/MWh. At the same time, the latest completed residual-load error was −981 MW, and the latest indicative Balance Delta observation was −643 MW. Under my forward-capacity assumption, reported inbound ATC was 5,799 MW for 20:00–21:00 and 7,463 MW for 21:00–22:00.
+
+I consider the short identifiable at 17:40. The trade is not a bet that the NESO Buy was irrelevant. My thesis is that the market had already priced a longer scarcity episode than the current system indicators supported. The inability to sustain the initial bullish reaction was the final confirmation.
+
+![Short context at 17:40](outputs/figures/short_context_at_1740.png)
+
+![Failed-reaction cutoff at 17:40](outputs/figures/intraday_decision_snapshot_1740_20_22.png)
+
+#### Entry, stop and sizing
+
+I split the €100 total risk budget equally between the two affected products. For each leg, I use the median execution price in the first five-minute window after the 17:40 decision.
+
+For 20:00–21:00, the 17:40–17:45 median was €185.20/MWh. The window contained 23 unique trades and 11.7 MWh, with prices from €177.00 to €190.30/MWh. I place the stop at €200/MWh, above the post-disclosure reaction high:
+
+```text
+risk per MWh = €200.00 − €185.20 = €14.80/MWh
+position MWh = €50 / €14.80 = 3.378 MWh
+```
+
+For 21:00–22:00, the representative entry was €163.88/MWh. The entry window contained 37 unique trades and 45.9 MWh, with prices from €158.00 to €170.00/MWh. I place the stop at €175/MWh:
+
+```text
+risk per MWh = €175.00 − €163.88 = €11.12/MWh
+position MWh = €50 / €11.12 = 4.496 MWh
+```
+
+For these one-hour products, the MWh exposure equals the MW position for one hour. Both proposed sizes are small relative to the recorded entry-window volume, but the tape does not prove order-book depth or eliminate slippage risk.
+
+#### Take-profit and time exit
+
+The target is a return to the price area before the system stress began at approximately 10:00. I use the median of all executions from the start of trading until 10:00 and round it to the nearest €5/MWh. The median is less sensitive than the mean to isolated extreme prints. The pre-stress medians were €129.00/MWh for 20:00–21:00 and €118.28/MWh for 21:00–22:00, giving targets of €130/MWh and €120/MWh. If a target is not reached, I close the corresponding leg ten minutes before delivery, at 19:50 or 20:50. A move above €200 or €175 invalidates the failed-reaction thesis and triggers the stop first.
+
+#### Simulated outcome
+
+![Simulated split short](outputs/figures/trade_simulation_short_20_22.png)
+
+The two legs produced different results. For 20:00–21:00, the first trade below the €130/MWh target occurred at 19:15:49. Recorded volume at or below the target accumulated to the 3.378 MWh position by 19:20:41. I assume a resting limit buy closed the short at €130/MWh once sufficient tape volume had traded through the level:
+
+```text
+P&L = (€185.20 − €130.00) × 3.378 MWh
+    = +€186.47
+```
+
+The 21:00–22:00 product did not reach its €120/MWh target. It later moved above the €175/MWh stop. The first print above the stop was only 0.1 MWh at €194.55. The tape does not show the order book, so the full-size stop execution cannot be reconstructed. To avoid understating the loss by waiting for later, more favourable prints, I use the first observed breach price of €194.55/MWh as a conservative exit proxy for the full position:
+
+```text
+P&L = (€163.88 − €194.55) × 4.496 MWh
+    = −€137.89
+```
+
+The combined result is approximately +€48.57 before fees, or +0.49R on the €100 total risk budget. The closer 20:00–21:00 contract returned to its pre-stress price area, but the later contract showed that the stress-duration thesis did not hold across the whole curve. The gap through the stop also shows why tape-only execution assumptions are fragile: actual slippage could have been better or worse than this conservative proxy.
 
 ## Data and methodology
 

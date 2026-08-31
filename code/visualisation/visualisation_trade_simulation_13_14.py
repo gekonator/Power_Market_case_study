@@ -17,7 +17,7 @@ delivery_seconds = 13 * 60 * 60
 entry_window_end = decision_seconds + 5 * 60
 time_exit_seconds = 12 * 60 * 60 + 50 * 60
 stop_price = 230.00
-hypothetical_trading_capital_eur = 100_000
+hypothetical_trading_capital_eur = 10_000
 risk_fraction_of_capital = 0.01
 
 trades = pd.read_csv(trades_path)
@@ -53,12 +53,12 @@ entry_trades = trades[
 ]
 entry_price = entry_trades["price_eur_mwh"].median()
 risk_per_mwh = entry_price - stop_price
-take_profit = entry_price + 5 * risk_per_mwh
-position_mwh = (
+risk_budget_eur = (
     hypothetical_trading_capital_eur
     * risk_fraction_of_capital
-    / risk_per_mwh
 )
+position_mwh = round(risk_budget_eur / risk_per_mwh, 3)
+take_profit = entry_price + 5 * risk_budget_eur / position_mwh
 
 trades_through_target = trades[
     trades["price_eur_mwh"] >= take_profit
@@ -117,11 +117,11 @@ if stop_touched_before_exit:
     raise ValueError("The stop was touched before the take-profit")
 
 profit_per_mwh = take_profit - entry_price
-reward_to_risk = profit_per_mwh / risk_per_mwh
-return_as_fraction_of_capital = (
-    reward_to_risk * risk_fraction_of_capital
-)
 position_profit_eur = position_mwh * profit_per_mwh
+reward_to_risk = position_profit_eur / risk_budget_eur
+return_as_fraction_of_capital = (
+    position_profit_eur / hypothetical_trading_capital_eur
+)
 
 summary = pd.DataFrame(
     [
