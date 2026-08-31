@@ -262,6 +262,32 @@ P&L = (€163.88 − €194.55) × 4.496 MWh
 
 The combined result is approximately +€48.57 before fees, or +0.49R on the €100 total risk budget. The closer 20:00–21:00 contract returned to its pre-stress price area, but the later contract showed that the stress-duration thesis did not hold across the whole curve. The gap through the stop also shows why tape-only execution assumptions are fragile: actual slippage could have been better or worse than this conservative proxy.
 
+## Q3. Pick one sheet you found most informative and one you found least
+
+The most informative sheet for finding trading opportunities was `neso_auctions`. It contains genuinely new information that can change expectations for future delivery periods. It also provides an exact disclosure time, affected delivery hours and accepted BritNed volumes. This made it possible to reconstruct what was known before an entry instead of guessing when the information became available.
+
+The least informative sheet for my analysis was `gb_flows`. It covers only the GB–NL border, while the same BritNed schedules were already available within `nl_flows`, together with the other Dutch borders. The sheet was useful as a cross-check, but it added less new information than the other datasets.
+
+## Q4. Take a look at the trades sheet
+
+The first microstructure issue is that the raw tape cannot be treated as one row per execution. The continuous tape contains 195,680 rows but 173,703 unique `trade_id` values. The raw volume is 208,974.15 MWh, compared with 174,962.70 MWh after deduplication, so summing the raw rows would overstate volume by 19.44%. I therefore remove repeated `trade_id` records before calculating trade counts, volume or five-minute price statistics.
+
+![Full-day trade-tape activity](outputs/figures/trade_tape_activity_full_day.png)
+
+Execution activity supports the midday stress story, although it does not prove causality by itself. Hourly products recorded 602 unique trades and 1,323.6 MWh during 12:00–12:05. The busiest hourly five-minute interval was 13:05–13:10, with 781 trades and 1,551.4 MWh. Quarter-hour activity was also elevated around the stress: 655 unique trades and 253.5 MWh during 12:05–12:10, followed by 680 trades and 258.0 MWh during 12:10–12:15. This is consistent with participants adjusting positions while imbalance prices and balancing needs were extreme.
+
+However, the tape also adds an important qualification to Q1. High activity was not limited to the stress window: there were large clusters at 02:20, 03:20 and during the morning. Execution count reflects liquidity, the number of products still open and proximity to gate closure, not only new fundamental information.
+
+Price reactions were also product-specific. The 09:46 disclosure was followed by a sustained repricing in the selected midday curve, while the bullish 17:28 disclosure produced only a short increase before the 20:00–22:00 products fell again. Even neighbouring products diverged: the 20:00–21:00 short returned to its pre-stress price area, while 21:00–22:00 later broke the stop. The tape therefore supports the broad Q1 story that the market repriced system stress, but contradicts any simple rule that every NESO Buy should cause a persistent or uniform price increase across the whole curve.
+
+Finally, this is an executed trade tape, not an order book. It does not show unexecuted bids and offers, queue position, market depth or the price impact of my hypothetical orders. The entry and exit prices in Q2 are therefore representative execution proxies rather than guaranteed fills.
+
+## Q5. What did you not have time for
+
+With more time, I would investigate more delivery products and compare their reactions to each disclosure systematically. The case contains only one market day, which is not enough to construct or validate a trading strategy. With a longer historical sample, I would test whether failed disclosure reactions and mFRRda activations produce repeatable intraday patterns rather than treating this day as representative.
+
+I would also want the historical order book, publication timestamps and reporting delays for the operational datasets. These would allow me to estimate executable depth and slippage, reconstruct the trader's information set more accurately and remove the zero-lag assumption used in Q2. Conventional generation, storage dispatch and timestamped schedule updates would help explain which resources replaced the missing energy as the midday balancing pressure eased.
+
 ## Data and methodology
 
 #### Units and timestamps
