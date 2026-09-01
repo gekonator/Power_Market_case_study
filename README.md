@@ -73,7 +73,7 @@ Large positive residual-load errors coincided with sharply higher imbalance pric
 
 ![Residual load error with export](outputs/figures/residual_load_error_and_nl_exports.png)
 
-Cross-border schedules were adjusted before the realised residual-load error appeared, presumably as updated information became available. The largest export reductions then coincided with the strongest positive residual-load errors, but the relationship was not exact. At 12:00, day-ahead net exports were 5,434 MW and the finalised schedule was 2,576 MW, a reduction of approximately 2,859 MW. The Netherlands nevertheless remained a net exporter.
+Cross-border schedules were adjusted before the realised residual-load error appeared, presumably as updated information became available. The largest export reductions then coincided with the strongest positive residual-load errors, but the relationship was not exact. At 12:00, day-ahead net exports were 5,434 MW and the finalised schedule was 2,576 MW, a reduction of approximately 2,859 MW. The Netherlands remained a net exporter.
 
 ### Residual error, imbalance prices and import capacity
 
@@ -119,7 +119,9 @@ The fall in imbalance prices after the 12:15 peak can be partly explained by the
 
 ### Limitations and assumptions
 
-The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at each decision time, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I do not use observations from intervals that had not yet finished. I also assume that transfer capacity for future delivery hours had been published by then. Future actuals, future balancing activations, future imbalance prices and finalised post-intraday schedules do not justify an entry. Entry, stop and take-profit use only information available at the decision time. Both entry and exit are intraday trades before delivery.
+The main limitation is that the dataset covers only one day. It was useful for understanding how this market works, but it is not enough to identify robust trading opportunities, construct a strategy or determine which factors consistently affect prices. I cannot test my hypotheses against historical data or distinguish repeatable relationships from one-off events. I can only formulate hypotheses about information that may indicate an opportunity.
+
+The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at each decision time, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I do not use observations from intervals that had not yet finished. I also assume that the reported available transfer capacity for future delivery hours was live and available at the decision time. Future actuals, future balancing activations, future imbalance prices and finalised post-intraday schedules do not justify an entry. Entry, stop and take-profit use only information available at the decision time. Both entry and exit are intraday trades before delivery.
 
 The task does not specify trading capital, so I assume capital of €10,000 and risk 1% of equity on each opportunity. The data cover only one day, which is not enough to estimate an optimal risk percentage or take-profit method statistically. I place each stop where the trade idea would be invalidated and set the take-profit before simulating the later price path. The take-profit method can differ between ideas, but I do not select a target from the known ex-post maximum.
 
@@ -143,7 +145,7 @@ At 09:46 the auction disclosed the risk, but the current system data did not yet
 
 At 10:15 residual-load error became positive, but Balance Delta was still slightly negative. This was an early warning rather than enough confirmation for my trade.
 
-I consider the opportunity identifiable at 10:30. By then the latest completed residual-load error had increased to +798 MW, and the indicative net Balance Delta contribution had turned positive at approximately +217 MW. Under my forward-capacity assumption, reported inbound ATC for 12:00–14:00 was zero. These indicators do not prove that the future system would be short, but together with the intraday price and volume move they gave broader confirmation than the auction disclosure alone.
+I consider the opportunity identifiable at 10:30. By then the latest completed residual-load error had increased to +798 MW, and the indicative net Balance Delta contribution had turned positive at approximately +217 MW. Under this assumption, reported inbound ATC for 12:00–14:00 was zero. These indicators do not prove that the future system would be short, but together with the intraday price and volume move they gave broader confirmation than the auction disclosure alone.
 
 ![Factors at 10:30](outputs/figures/long_confirmation_at_1030.png)
 
@@ -204,15 +206,15 @@ The 17:28 disclosure affected the 20:00–22:00 delivery curve.
 
 ![NESO Buy versus DA BritNed import at 17:28](outputs/figures/neso_vs_da_britned_import_1728_20_22.png)
 
-NESO published a 172 MW BritNed Buy for 20:00–21:00 and 431 MW for 21:00–22:00. These volumes were respectively 202% and 169% of the Netherlands' scheduled DA BritNed imports. This was bullish information for NL, but it arrived after the intraday market had already repriced the earlier system stress. I therefore looked at whether the new information could extend the scarcity premium or whether the market had already overestimated the duration of the stress.
+NESO published a 172 MW BritNed Buy for 20:00–21:00 and 431 MW for 21:00–22:00. These volumes were respectively 202% and 169% of the Netherlands' scheduled DA BritNed imports. This was bullish information for NL, but it arrived after the intraday market had already repriced the earlier system stress.
 
 #### When it became identifiable
 
 I would not short immediately at 17:28 because the lost BritNed supply was a real bullish risk. Both products initially increased after the disclosure. The 20:00–21:00 median rose from €182.56/MWh during 17:25–17:28 to €192.66/MWh during 17:30–17:35. The 21:00–22:00 median rose from €165.06/MWh to €170.25/MWh.
 
-The reaction then failed. During 17:35–17:40, the medians fell to €188.80/MWh and €167.69/MWh. At the same time, the latest completed residual-load error was −981 MW, and the latest indicative Balance Delta observation was −643 MW. Under my forward-capacity assumption, reported inbound ATC was 5,799 MW for 20:00–21:00 and 7,463 MW for 21:00–22:00.
+The reaction then failed. During 17:35–17:40, the medians fell to €188.80/MWh and €167.69/MWh. At the same time, the latest completed residual-load error was −981 MW, and the latest indicative Balance Delta observation was −643 MW.
 
-I consider the short identifiable at 17:40. The trade is not a bet that the NESO Buy was irrelevant. My thesis is that the market had already priced a longer scarcity episode than the current system indicators supported. The inability to sustain the initial bullish reaction was the final confirmation.
+I consider the short identifiable at 17:40. The trade is not a bet that the NESO Buy was irrelevant. My thesis is based on the fundamental indicators signalling that the midday stress was ending, the relatively high prices of these contracts and the lack of a sustained bullish reaction after the NESO Buy disclosure.
 
 ![Short context at 17:40](outputs/figures/short_context_at_1740.png)
 
@@ -270,17 +272,35 @@ The least informative sheet for my analysis was `gb_flows`. It covers only the G
 
 ## Q4. Take a look at the trades sheet
 
-The first microstructure issue is that the raw tape cannot be treated as one row per execution. The continuous tape contains 195,680 rows but 173,703 unique `trade_id` values. The raw volume is 208,974.15 MWh, compared with 174,962.70 MWh after deduplication, so summing the raw rows would overstate volume by 19.44%. I therefore remove repeated `trade_id` records before calculating trade counts, volume or five-minute price statistics.
+The first microstructure issue is that the raw tape cannot be treated as one row per execution. The continuous tape contains 195,680 rows but only 173,703 unique `trade_id` values. I therefore remove repeated `trade_id` records before calculating trade counts or volume.
 
 ![Full-day trade-tape activity](outputs/figures/trade_tape_activity_full_day.png)
 
-Execution activity supports the midday stress story, although it does not prove causality by itself. Hourly products recorded 602 unique trades and 1,323.6 MWh during 12:00–12:05. The busiest hourly five-minute interval was 13:05–13:10, with 781 trades and 1,551.4 MWh. Quarter-hour activity was also elevated around the stress: 655 unique trades and 253.5 MWh during 12:05–12:10, followed by 680 trades and 258.0 MWh during 12:10–12:15. This is consistent with participants adjusting positions while imbalance prices and balancing needs were extreme.
+The volume profile does not make the stress periods easy to identify. Volumes during the stress were broadly comparable with those in ordinary hours, so volume alone would not have revealed the severity of the system conditions.
 
-However, the tape also adds an important qualification to Q1. High activity was not limited to the stress window: there were large clusters at 02:20, 03:20 and during the morning. Execution count reflects liquidity, the number of products still open and proximity to gate closure, not only new fundamental information.
+![Intraday trajectories for delivery starts 01:00–06:00](outputs/figures/intraday_hourly_product_trajectories_1.png)
 
-Price reactions were also product-specific. The 09:46 disclosure was followed by a sustained repricing in the selected midday curve, while the bullish 17:28 disclosure produced only a short increase before the 20:00–22:00 products fell again. Even neighbouring products diverged: the 20:00–21:00 short returned to its pre-stress price area, while 21:00–22:00 later broke the stop. The tape therefore supports the broad Q1 story that the market repriced system stress, but contradicts any simple rule that every NESO Buy should cause a persistent or uniform price increase across the whole curve.
+![Intraday trajectories for delivery starts 07:00–12:00](outputs/figures/intraday_hourly_product_trajectories_2.png)
 
-Finally, this is an executed trade tape, not an order book. It does not show unexecuted bids and offers, queue position, market depth or the price impact of my hypothetical orders. The entry and exit prices in Q2 are therefore representative execution proxies rather than guaranteed fills.
+![Intraday trajectories for delivery starts 13:00–18:00](outputs/figures/intraday_hourly_product_trajectories_3.png)
+
+![Intraday trajectories for delivery starts 19:00–22:00](outputs/figures/intraday_hourly_product_trajectories_4.png)
+
+The hourly intraday trajectories show two further patterns. First, the 22:00–23:00 contract traded at extremely negative prices shortly before delivery. Second, many hourly products showed substantial price movements. Volatility was greatest during the stress period, but the morning products also experienced substantial price movements. The evening products repriced during the midday stress as well, although the more distant delivery hours generally moved less.
+
+The tape contains 140 unique trades at negative prices. Their distribution across delivery periods is:
+
+```text
+delivery_start_time_utc  delivery_end_time_utc
+22:00:00                 23:00:00                 126
+22:30:00                 22:45:00                  11
+03:15:00                 03:30:00                   2
+22:00:00                 22:30:00                   1
+```
+
+The total volume traded at negative prices was 151.675 MWh. The 22:00–23:00 hourly contract accounted for 143.7 MWh, or 94.7% of the total negative-price volume. The episode lasted only about 30 seconds, so it did not represent sustained repricing. It could reflect a data issue or an isolated microstructure event; with the available data, I would not treat it as a trading opportunity.
+
+Taken together, the price trajectories support the midday stress story in Q1, but the volume profile and the brief late negative-price episode show that not every feature of the tape can be explained by that story.
 
 ## Q5. What did you not have time for
 
