@@ -1,4 +1,4 @@
-# AOX Trade case study
+# AOX trade case study
 
 ## Q0. Explain the three stages in your own words
 
@@ -22,12 +22,12 @@ The second thing that surprised me was that the day-ahead market is a call marke
 
 ## Q1. Tell us the story of the day
 
-The main event of the day was a severe midday system stress that the day-ahead market had not anticipated. A large solar forecast error, slightly higher demand, limited ability to increase imports across the reported borders and the loss of expected BritNed supply combined to push balancing and imbalance prices to extreme levels.
+The main event of the day was severe system stress around midday that the day-ahead market had not anticipated. A large solar forecast error, slightly higher demand, limited ability to increase imports across the reported borders and the loss of expected BritNed supply combined to push balancing and imbalance prices to extreme levels.
 
 ```text
 07:00   export schedules begin to fall below DA
 09:46   NESO publishes auction results for 12:00–16:00
-10:00   residual-load error turns positive and inbound ATC reaches zero
+10:00   residual-load error turns positive for the delivery interval (observable at 10:15); inbound ATC reaches zero
 11:45   imbalance prices enter the extreme range
 12:04   second NESO auction results target 16:00–19:00
 12:15   imbalance price peaks at €4,358/MWh
@@ -67,7 +67,7 @@ Actual residual load was above the day-ahead forecast between approximately 02:0
 
 ![Imbalance prices with residual load error](outputs/figures/prices_and_residual_load_error.png)
 
-Large positive residual-load errors coincided with sharply higher imbalance prices, suggesting that the additional short pressure was compensated through expensive balancing actions. The short imbalance price reached €4,358.34/MWh at 12:15, compared with a day-ahead price of €129.21/MWh for the same interval.
+Large positive residual-load errors coincided with sharply higher imbalance prices, suggesting that the additional short pressure was met with expensive balancing actions. The short imbalance price reached €4,358.34/MWh at 12:15, compared with a day-ahead price of €129.21/MWh for the same interval.
 
 ### Residual load error with exports
 
@@ -119,11 +119,11 @@ The fall in imbalance prices after the 12:15 peak can be partly explained by the
 
 ### Limitations and assumptions
 
-The main limitation is that the dataset covers only one day. It was useful for understanding how this market works, but it is not enough to identify robust trading opportunities, construct a strategy or determine which factors consistently affect prices. I cannot test my hypotheses against historical data or distinguish repeatable relationships from one-off events. I can only formulate hypotheses about information that may indicate an opportunity.
+The main limitation is that the dataset covers only one day. It was useful for understanding how this market works, but it is not enough to identify robust trading opportunities, construct a strategy or determine which factors consistently affect prices. I cannot test my hypotheses against historical data or distinguish repeatable relationships from one-off events. I can only form hypotheses about which information might signal an opportunity.
 
-The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at each decision time, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I do not use observations from intervals that had not yet finished. I also assume that the reported available transfer capacity for future delivery hours was live and available at the decision time. Future actuals, future balancing activations, future imbalance prices and finalised post-intraday schedules do not justify an entry. Entry, stop and take-profit use only information available at the decision time. Both entry and exit are intraday trades before delivery.
+The data pack does not give publication times or reporting delays for most operational series. I therefore use a zero-lag scenario: at each decision time, I assume that completed solar, wind, demand and Balance Delta observations were already visible. I do not use observations from intervals that had not yet finished. I also assume that the reported transfer-capacity data for future delivery hours were live and visible at the decision time. Future actuals, future balancing activations, future imbalance prices and finalised post-intraday schedules do not justify a decision. The signal, stop and take-profit use only information available at the decision time; entry execution is estimated separately from the subsequent trade tape under the conventions described below. Both entry and exit are intraday trades before delivery.
 
-The task does not specify trading capital, so I assume capital of €10,000 and risk 1% of equity on each opportunity. The data cover only one day, which is not enough to estimate an optimal risk percentage or take-profit method statistically. I place each stop where the trade idea would be invalidated and set the take-profit before simulating the later price path. The take-profit method can differ between ideas, but I do not select a target from the known ex-post maximum.
+The task does not specify trading capital, so I assume capital of €10,000 and target a loss of 1% of equity at the specified stop level for each opportunity. This is a sizing convention rather than a guaranteed maximum loss: price gaps, limited liquidity and slippage can produce a larger loss. The data cover only one day, which is not enough to estimate an optimal risk percentage or take-profit method statistically. I place each stop where the trade idea would be invalidated and set the take-profit before simulating the later price path. The take-profit method can differ between ideas, but I do not select a target from the known ex-post maximum.
 
 The trades file contains 73,343 unique continuous hourly trades, 100,098 quarter-hour trades and only 262 half-hour trades. I focus first on hourly products because they match the hourly BritNed schedules and NESO auction periods directly. Half-hour products are too thin for the main analysis.
 
@@ -143,7 +143,7 @@ The clearest direct shock was in 12:00–13:00. The Netherlands had scheduled a 
 
 At 09:46 the auction disclosed the risk, but the current system data did not yet confirm short pressure. Residual-load error was negative and the indicative Balance Delta contribution was below zero. An immediate long would only make sense for a trader who could process the disclosure faster than the rest of the market.
 
-At 10:15 residual-load error became positive, but Balance Delta was still slightly negative. This was an early warning rather than enough confirmation for my trade.
+At 10:15, the completed 10:00–10:15 delivery interval made the positive residual-load error observable, but Balance Delta was still slightly negative. This was an early warning rather than enough confirmation for my trade.
 
 I consider the opportunity identifiable at 10:30. By then the latest completed residual-load error had increased to +798 MW, and the indicative net Balance Delta contribution had turned positive at approximately +217 MW. Under this assumption, reported inbound ATC for 12:00–14:00 was zero. These indicators do not prove that the future system would be short, but together with the intraday price and volume move they gave broader confirmation than the auction disclosure alone.
 
@@ -151,11 +151,11 @@ I consider the opportunity identifiable at 10:30. By then the latest completed r
 
 #### Entry and stop, sizing
 
-The first five-minute window after the decision traded between €257.60 and €299.00/MWh. Its median was €277.90/MWh, based on 47 unique trades and 107.9 MWh of recorded volume. I use €277.90/MWh as the representative entry.
+Trades in the first five-minute window after the decision ranged from €257.60 to €299.00/MWh. The median was €277.90/MWh, based on 47 unique trades and 107.9 MWh of recorded volume. I use €277.90/MWh as an execution proxy for an order submitted after the 10:30 signal; the subsequent five-minute trades are not used to form the trading decision.
 
 I set the stop at €230/MWh, below the last pre-entry breakout area. A return below this level would invalidate the price confirmation. I would also close the position if residual-load error and the indicative Balance Delta reversed, or if substantial inbound capacity became available.
 
-The case does not specify trading capital or portfolio limits, so position size requires an explicit assumption. I use hypothetical trading capital of €10,000 and risk 1% (€100) on the trade:
+The case does not specify trading capital or portfolio limits, so position size requires an explicit assumption. I assume €10,000 in hypothetical trading capital and risk 1% (€100) on the trade:
 
 ```text
 risk per MWh = €277.90 − €230.00 = €47.90/MWh
@@ -174,7 +174,7 @@ I use three exit rules and close the position when the first one is triggered:
 2. the first upward mFRR direct activation;
 3. a time exit at 12:50 UTC, ten minutes before delivery.
 
-The price target is set before looking at the subsequent price path:
+The 5R target is a deliberately ambitious return objective rather than a statistically optimised level: a one-day sample cannot support such optimisation. I set it before looking at the subsequent price path:
 
 ```text
 5R target profit = 5 × €100 = €500
@@ -182,7 +182,7 @@ required price increase = €500 / 2.088 MWh = €239.46/MWh
 take-profit = €277.90 + €239.46 = €517.36/MWh
 ```
 
-If the price target is not reached first, an upward mFRR direct activation is an event-based reason to close because the expected stress has entered the realised balancing stage. If neither condition occurs, I close at 12:50 and do not carry the position into the 13:00 delivery period.
+If the price target is not reached first, an upward mFRR direct activation is an event-based reason to close. My hypothesis is that manual activation signals that the expected deficit has materialised and that TenneT has begun addressing it, so the remaining intraday upside may narrow. If neither condition occurs, I close at 12:50 and do not carry the position into the 13:00 delivery period.
 
 #### Simulated outcome
 
@@ -206,7 +206,7 @@ The 17:28 disclosure affected the 20:00–22:00 delivery curve.
 
 ![NESO Buy versus DA BritNed import at 17:28](outputs/figures/neso_vs_da_britned_import_1728_20_22.png)
 
-NESO published a 172 MW BritNed Buy for 20:00–21:00 and 431 MW for 21:00–22:00. These volumes were respectively 202% and 169% of the Netherlands' scheduled DA BritNed imports. This was bullish information for NL, but it arrived after the intraday market had already repriced the earlier system stress.
+NESO published a 172 MW BritNed Buy for 20:00–21:00 and 431 MW for 21:00–22:00. These volumes were equal to 202% and 169%, respectively, of the Netherlands' scheduled DA BritNed imports. This was bullish information for NL, but it arrived after the intraday market had already repriced the earlier system stress.
 
 #### When it became identifiable
 
@@ -222,7 +222,7 @@ I consider the short identifiable at 17:40. The trade is not a bet that the NESO
 
 #### Entry, stop and sizing
 
-I split the €100 total risk budget equally between the two affected products. For each leg, I use the median execution price in the first five-minute window after the 17:40 decision.
+I split the planned €100 stop-loss budget equally between the two affected products. For each leg, I use the median execution price in the first five-minute window after the 17:40 decision as a proxy for an order submitted after the signal; these subsequent trades are not used to form the decision.
 
 For 20:00–21:00, the 17:40–17:45 median was €185.20/MWh. The window contained 23 unique trades and 11.7 MWh, with prices from €177.00 to €190.30/MWh. I place the stop at €200/MWh, above the post-disclosure reaction high:
 
@@ -262,7 +262,7 @@ P&L = (€163.88 − €194.55) × 4.496 MWh
     = −€137.89
 ```
 
-The combined result is approximately +€48.57 before fees, or +0.49R on the €100 total risk budget. The closer 20:00–21:00 contract returned to its pre-stress price area, but the later contract showed that the stress-duration thesis did not hold across the whole curve. The gap through the stop also shows why tape-only execution assumptions are fragile: actual slippage could have been better or worse than this conservative proxy.
+The combined result is approximately +€48.57 before fees, or +0.49R relative to the planned €100 stop-loss budget. The closer 20:00–21:00 contract returned to its pre-stress price area, but the later contract showed that the stress-duration thesis did not hold across the whole curve. The 21:00–22:00 leg lost more than its planned €50 allocation because the first observed price beyond the stop was already €194.55/MWh. This gap also shows why tape-only execution assumptions are fragile: actual slippage could have been better or worse than this conservative proxy.
 
 ## Q3. Pick one sheet you found most informative and one you found least
 
@@ -276,7 +276,7 @@ The first microstructure issue is that the raw tape cannot be treated as one row
 
 ![Full-day trade-tape activity](outputs/figures/trade_tape_activity_full_day.png)
 
-The volume profile does not make the stress periods easy to identify. Volumes during the stress were broadly comparable with those in ordinary hours, so volume alone would not have revealed the severity of the system conditions.
+The volume profile does not make the main stress period easy to identify. Volumes during the stress were broadly comparable with those in ordinary hours, so volume alone would not have revealed the severity of the system conditions.
 
 ![Intraday trajectories for delivery starts 01:00–06:00](outputs/figures/intraday_hourly_product_trajectories_1.png)
 
@@ -286,7 +286,7 @@ The volume profile does not make the stress periods easy to identify. Volumes du
 
 ![Intraday trajectories for delivery starts 19:00–22:00](outputs/figures/intraday_hourly_product_trajectories_4.png)
 
-The hourly intraday trajectories show two further patterns. First, the 22:00–23:00 contract traded at extremely negative prices shortly before delivery. Second, many hourly products showed substantial price movements. Volatility was greatest during the stress period, but the morning products also experienced substantial price movements. The evening products repriced during the midday stress as well, although the more distant delivery hours generally moved less.
+The hourly intraday trajectories show two further patterns. First, the 22:00–23:00 contract traded at extremely negative prices shortly before delivery. Second, substantial price movements were not confined to the stress period: the morning products were volatile too. The evening products also repriced during the midday stress, although the more distant delivery hours generally moved less.
 
 The tape contains 140 unique trades at negative prices. Their distribution across delivery periods is:
 
@@ -304,7 +304,7 @@ Taken together, the price trajectories support the midday stress story in Q1, bu
 
 ## Q5. What did you not have time for
 
-With more time, I would investigate more delivery products and compare their reactions to each disclosure systematically. The case contains only one market day, which is not enough to construct or validate a trading strategy. With a longer historical sample, I would test whether failed disclosure reactions and mFRRda activations produce repeatable intraday patterns rather than treating this day as representative.
+With more time, I would investigate more quarter-hour and half-hour products and compare their reactions to each disclosure systematically. The case contains only one market day, which is not enough to construct or validate a trading strategy. With a longer historical sample, I would test whether failed disclosure reactions and mFRRda activations produce repeatable intraday patterns rather than treating this day as representative.
 
 I would also want the historical order book, publication timestamps and reporting delays for the operational datasets. These would allow me to estimate executable depth and slippage, reconstruct the trader's information set more accurately and remove the zero-lag assumption used in Q2. Conventional generation, storage dispatch and timestamped schedule updates would help explain which resources replaced the missing energy as the midday balancing pressure eased.
 
