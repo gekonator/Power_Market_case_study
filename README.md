@@ -1,4 +1,4 @@
-# AOX trade case study
+# Power Market case study
 
 ## Q0. Explain the three stages in your own words
 
